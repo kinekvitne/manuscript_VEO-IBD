@@ -1,4 +1,4 @@
-#Set working directory
+# Set your working directory
 setwd()
 
 # Load in packages
@@ -43,11 +43,11 @@ plotAnnotatedStatic <- function(annotated, legend_setting = "bottom"){
 ###########################################################################################
 
 # Read in data
-feature_table <- read_csv("gnps_quant.csv") 
+feature_table <- read_csv("metabolomics/mzmine/gnps_quant.csv") 
 colnames(feature_table)[3] <- "RT"
 metadata <- read.csv("metadata_VEOIBD.csv")
-sample_order <- read.csv("sequence.csv") %>% dplyr::select(-1)
-annotations <- read.delim("merged_results_with_gnps_all_libs.tsv")
+sample_order <- read.csv("metabolomics/sequence.csv") %>% dplyr::select(-1)
+annotations <- read.delim("metabolomics/fbmn/merged_results_with_gnps_all_libs.tsv")
 annotations$X.Scan. <- as.character(annotations$X.Scan.)
 
 info_feature <- feature_table %>% dplyr::select(1:3,7)
@@ -314,7 +314,7 @@ feature_to_rt <- info_feature_complete %>% dplyr::filter(RT < 0.70 | RT > 9.5) %
 data_clean4 <- data_clean3 %>% dplyr::select(-c(feature_to_rt$Feature)) 
 
 # Clean contaminant found via MN
-contaminants <- read_csv("edge_table_deltamz.csv") 
+contaminants <- read_csv("metabolomics/cytoscape/edge_table_deltamz.csv") 
 
 contaminants_2 <- contaminants %>% 
   dplyr::filter((deltamz >= 44.02 & deltamz <= 44.03) | 
@@ -677,7 +677,7 @@ plot_ratio_tripeptides <- data_vip_tripeptides %>%
 #ggsave(filename = "plot_ratio_tripeptides.svg", plot = plot_ratio_tripeptides, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
 
 # Include features predicted to be tripeptides by SIRIUS/Canopus
-canopus <- read.delim("canopus_formula_summary.tsv")
+canopus <- read.delim("metabolomics/SIRIUS/canopus_formula_summary.tsv")
 canopus$mappingFeatureId <- as.character(canopus$mappingFeatureId)
 
 class_predictions <- VIPs_cohort_Load %>% left_join(canopus, by = c("ID" = "mappingFeatureId")) %>% 
@@ -725,7 +725,7 @@ plot_ratio_tripeptides_all <- data_vip_tripeptides_all %>%
 ##### BILE ACIDS #####
 
 # Pof molecular networking validation of bile acid candidates
-BA_query <- read.delim("BA_query_library_final.tsv")
+BA_query <- read.delim("metabolomics/BA_query_library_final.tsv")
 names(BA_query)[names(BA_query) == "X.Scan."] <- "ID"
 BA_query_filter <- BA_query %>% 
   dplyr::filter(str_detect(pattern = "Did not pass", query_validation))
@@ -1067,7 +1067,7 @@ export(dda_filtered, MsBackendMgf(), file = "ibd_interest_200.mgf", exportTitle 
 ###############################################################################################
 
 ##### SIRIUS PREDICTIONS #####
-canopus <- read.delim("canopus_formula_summary.tsv")
+canopus <- read.delim("metabolomics/SIRIUS/canopus_formula_summary.tsv")
 canopus$mappingFeatureId <- as.character(canopus$mappingFeatureId)
 
 class_predictions <- VIPs_cohort_Load %>% left_join(canopus, by = c("ID" = "mappingFeatureId")) %>% 
@@ -1184,7 +1184,7 @@ print(table_feat_7024)
 chisq.test(table_feat_7024)
 
 ### Feature 5158 - Glu-Phe ###
-table_feat_5158 <- matrix(c(119, 167, 304, 2885),
+table_feat_5158 <- matrix(c(64, 162, 359, 2890),
                           nrow = 2, byrow = TRUE,
                           dimnames = list(c("Presence", "Absence"), c("IBD", "Healthy")))
 
@@ -1193,9 +1193,8 @@ chisq.test(table_feat_5158)
 
 data <- data.frame(
   Status = c("Presence", "Absence"),
-  IBD = c(119, 304),
-  Healthy = c(167, 2885)
-)
+  IBD = c(64, 359),
+  Healthy = c(162, 2890))
 
 # Convert to long format
 data_long <- pivot_longer(data, cols = c("IBD", "Healthy"),
@@ -1218,7 +1217,7 @@ plot_Glu_Phe <- ggplot(data_long, aes(x = Group, y = Count, fill = Status)) +
 
 
 ### Feature 4622 - Asn-Phe ###
-table_feat_4622 <- matrix(c(52, 6, 423, 3046),
+table_feat_4622 <- matrix(c(46, 6, 377, 3046),
                           nrow = 2, byrow = TRUE,
                           dimnames = list(c("Presence", "Absence"), c("IBD", "Healthy")))
 
@@ -1227,9 +1226,8 @@ chisq.test(table_feat_4622)
 
 data <- data.frame(
   Status = c("Presence", "Absence"),
-  IBD = c(52, 423),
-  Healthy = c(6, 3046)
-)
+  IBD = c(46, 377),
+  Healthy = c(6, 3046))
 
 # Convert to long format
 data_long <- pivot_longer(data, cols = c("IBD", "Healthy"),
@@ -1252,7 +1250,7 @@ plot_Asn_Phe <- ggplot(data_long, aes(x = Group, y = Count, fill = Status)) +
 
 
 ### Feature 8739 - Thr-Val-Leu ###
-table_feat_8739 <- matrix(c(142, 161, 281, 2891),
+table_feat_8739 <- matrix(c(28, 151, 259, 2901),
                           nrow = 2, byrow = TRUE,
                           dimnames = list(c("Presence", "Absence"), c("IBD", "Healthy")))
 
@@ -1261,9 +1259,8 @@ chisq.test(table_feat_8739)
 
 data <- data.frame(
   Status = c("Presence", "Absence"),
-  IBD = c(142, 281),
-  Healthy = c(161, 2891)
-)
+  IBD = c(28, 259),
+  Healthy = c(151, 2901))
 
 # Convert to long format
 data_long <- pivot_longer(data, cols = c("IBD", "Healthy"),
@@ -1282,11 +1279,12 @@ plot_Thr_Val_Leu <- ggplot(data_long, aes(x = Group, y = Count, fill = Status)) 
     panel.grid.minor = element_blank(),   
     axis.line = element_line(color = "black", linewidth = 0.6), 
     axis.ticks = element_line(color = "black"))
+
 #ggsave(filename = "Thr-Val-Leu_tissuemasst.svg", plot = plot_Thr_Val_Leu, device = "svg", width = 3, height = 3.5, dpi = "retina")
 
 
 ### Feature 9022 - Ile-Pro-Ile ###
-table_feat_9022 <- matrix(c(35, 42, 388, 3010),
+table_feat_9022 <- matrix(c(33, 40, 193, 3012),
                           nrow = 2, byrow = TRUE,
                           dimnames = list(c("Presence", "Absence"), c("IBD", "Healthy")))
 
@@ -1295,9 +1293,8 @@ chisq.test(table_feat_9022)
 
 data <- data.frame(
   Status = c("Presence", "Absence"),
-  IBD = c(35, 388),
-  Healthy = c(42, 3010)
-)
+  IBD = c(33, 193),
+  Healthy = c(40, 3012))
 
 # Convert to long format
 data_long <- pivot_longer(data, cols = c("IBD", "Healthy"),
@@ -1330,8 +1327,7 @@ chisq.test(table_feat_9471)
 data <- data.frame(
   Status = c("Presence", "Absence"),
   IBD = c(46, 180),
-  Healthy = c(104, 2948)
-)
+  Healthy = c(104, 2948))
 
 # Convert to long format
 data_long <- pivot_longer(data, cols = c("IBD", "Healthy"),
@@ -1349,8 +1345,7 @@ plot_9471 <- ggplot(data_long, aes(x = Group, y = Count, fill = Status)) +
     panel.grid.major = element_blank(),   
     panel.grid.minor = element_blank(),  
     axis.line = element_line(color = "black", linewidth = 0.6),  
-    axis.ticks = element_line(color = "black")  
-  )
+    axis.ticks = element_line(color = "black"))
 #ggsave(filename = "Feat_9471_tissuemasst.svg", plot = plot_9471, device = "svg", width = 3, height = 3.5, dpi = "retina")
 
 
