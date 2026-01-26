@@ -1,0 +1,55 @@
+sample_ID,Cohort,Age,Age_IBD_diagnosis,Sex,Medication use ^,Aminosalicylate,ABX,TNF_alpha_i,Biologics
+PT_AC_001,VEOIBD,4,3,M,"azathioprine, sulfasalazine, prednisone, azithromycin, florastor",yes,yes,no,no
+PT_AC_020,VEOIBD,9,5,F,"sulfasalazine, budesonide, probiotic gummy",yes,no,no,no
+PT_AC_025,VEOIBD,3,2,F,"infliximab, prednisone, azathioprine, mesalamine, lactobacillus acidophilus",yes,no,yes,yes
+PT_AC_038,VEOIBD,11,4,F,"mercaptopurine, mesalamine, amoxicillin",yes,yes,no,no
+PT_AC_095,VEOIBD,9,3,M,"infliximab, culturelle",no,no,yes,yes
+PT_AC_123,VEOIBD,7,5,F,adalimumab,no,no,yes,yes
+PT_AC_153,VEOIBD,14,3,M,"mercaptopurine, balsalazide",yes,no,no,no
+PT_AC_175,VEOIBD,2,2,M,sulfasalazine,yes,no,no,no
+PT_AI_021,VEOIBD,13,4,F,"mercaptopurine, VSL #3",no,no,no,no
+PT_S8,VEOIBD,6,2,M,"hydrocortisone sodium succinate, vedolizumab, sulfasalazine",yes,no,no,yes
+PT_S25,VEOIBD,7,4,F,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S60,VEOIBD,9,3,M,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S61,VEOIBD,6,5,M,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S63,VEOIBD,3,2,F,"diphenhydramine, infliximab",no,no,yes,yes
+PT_S69,VEOIBD,5,4,F,"diphenhydramine, infliximab",no,no,yes,yes
+PT_S77,VEOIBD,5,4,M,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S78,VEOIBD,7,2,M,infliximab,no,no,yes,yes
+PT_S81,VEOIBD,10,4,F,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S83,VEOIBD,5,5,M,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S90,VEOIBD,6,4,M,"acetaminophen, diphenhydramine, infliximab",no,no,yes,yes
+PT_S97,VEOIBD,7,5,F,"acetaminophen, diphenhydramine, infliximab, balsalazide",yes,no,yes,yes
+PT_S98,VEOIBD,12,3,F,"hydrocortisone sodium succinate, vedolizumab, mesalamine",yes,no,no,yes
+PT_PANDY_002,VEOIBD,6,5,M,"corticosteroids, sirolimus",no,no,no,no
+PT_PEDRZ_012,VEOIBD,2,2,M,NA,NA,NA,NA,NA
+PT_BHATT_018,VEOIBD,1,0.5,F,"corticosteroids, sirolimus, methotrexate",no,no,no,no
+PT_IDDI_136,VEOIBD,5,4,M,"sulfamethoxazole-trimethoprim, isavuconazole, sulfasalazine, omeprazole, vitamin D",yes,yes,no,no
+HC_09,Healthy,4,NA,M,NA,no,no,no,no
+HC_18,Healthy,9,NA,F,NA,no,no,no,no
+HC_03,Healthy,3,NA,F,NA,no,no,no,no
+HC_37,Healthy,11,NA,F,NA,no,no,no,no
+HC_16,Healthy,9,NA,M,NA,no,no,no,no
+HC_20,Healthy,7,NA,F,NA,no,no,no,no
+HC_42,Healthy,14,NA,M,NA,no,no,no,no
+HC_05,Healthy,2,NA,M,NA,no,no,no,no
+HC_47,Healthy,13,NA,F,NA,no,no,no,no
+HC_24,Healthy,6,NA,M,NA,no,no,no,no
+HC_02,Healthy,7,NA,F,NA,no,no,no,no
+HC_19,Healthy,9,NA,M,NA,no,no,no,no
+HC_43,Healthy,6,NA,M,NA,no,no,no,no
+HC_10,Healthy,3,NA,F,NA,no,no,no,no
+HC_15,Healthy,5,NA,F,NA,no,no,no,no
+HC_36,Healthy,5,NA,M,NA,no,no,no,no
+HC_13,Healthy,7,NA,M,NA,no,no,no,no
+HC_21,Healthy,10,NA,F,NA,no,no,no,no
+HC_22,Healthy,5,NA,M,NA,no,no,no,no
+HC_12,Healthy,6,NA,M,NA,no,no,no,no
+HC_25,Healthy,7,NA,F,NA,no,no,no,no
+HC_45,Healthy,12,NA,F,NA,no,no,no,no
+HC_17,Healthy,1,NA,F,NA,no,no,no,no
+HC_07,Healthy,6,NA,M,NA,no,no,no,no
+HC_99,Healthy,5,NA,M,NA,no,no,no,no
+HC_98,Healthy,2,NA,M,NA,no,no,no,no
+HC_06,Healthy,2,NA,M,NA,no,no,no,no
+HC_97,Healthy,2,NA,F,NA,no,no,no,no

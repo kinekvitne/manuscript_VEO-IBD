@@ -14,6 +14,7 @@ library(Spectra)
 library(MsBackendMgf) 
 library(homologueDiscoverer)
 library(ggrepel)
+library(effsize)
 
 ###########################################################################################
 # Function for PEG removal
@@ -43,11 +44,11 @@ plotAnnotatedStatic <- function(annotated, legend_setting = "bottom"){
 ###########################################################################################
 
 # Read in data
-feature_table <- read_csv("metabolomics/mzmine/gnps_quant.csv") 
+feature_table <- read_csv("gnps_quant.csv") 
 colnames(feature_table)[3] <- "RT"
-metadata <- read.csv("metadata_VEOIBD.csv")
-sample_order <- read.csv("metabolomics/sequence.csv") %>% dplyr::select(-1)
-annotations <- read.delim("metabolomics/fbmn/merged_results_with_gnps_all_libs.tsv")
+metadata <- read.csv("metadata_VEOIBD_detailed.csv")
+sample_order <- read.csv("sequence.csv") %>% dplyr::select(-1)
+annotations <- read.delim("merged_results_with_gnps_all_libs.tsv")
 annotations$X.Scan. <- as.character(annotations$X.Scan.)
 
 info_feature <- feature_table %>% dplyr::select(1:3,7)
@@ -163,7 +164,6 @@ table_IS %>% ggbarplot(x = "Run_Order", y = "sulfadimethoxine", xlab = "Run Orde
 
 cv_is <- sd(table_IS$sulfadimethoxine)/mean(table_IS$sulfadimethoxine)
 # CV is 20% is okish
-
 
 # Check features per sample type
 data_blank <- data_final %>% dplyr::filter(str_detect(pattern = "Blank", SampleID))
@@ -314,7 +314,7 @@ feature_to_rt <- info_feature_complete %>% dplyr::filter(RT < 0.70 | RT > 9.5) %
 data_clean4 <- data_clean3 %>% dplyr::select(-c(feature_to_rt$Feature)) 
 
 # Clean contaminant found via MN
-contaminants <- read_csv("metabolomics/cytoscape/edge_table_deltamz.csv") 
+contaminants <- read_csv("edge_table_deltamz.csv") 
 
 contaminants_2 <- contaminants %>% 
   dplyr::filter((deltamz >= 44.02 & deltamz <= 44.03) | 
@@ -414,7 +414,6 @@ permanova <- adonis2(dist_metabolites ~ Cohort + Age, PCA_whole_scores, na.actio
 
 #ggsave(filename = "VEOIBD_PCA_fecal.svg", plot = PCA_plot, device = "svg", width = 4, height = 3, dpi = "retina")
 
-
 # PLSDA - Cohort
 PLSDA_cohort <- mixOmics::plsda(data_final_clr %>% select_at(vars(-one_of(nearZeroVar(., names = TRUE)))),
                                      PCA_whole_scores$Cohort, ncomp = 2, scale = TRUE)
@@ -438,9 +437,9 @@ Loadings_cohort <- plotLoadings(PLSDA_cohort, plot = FALSE, contrib = "max")
 Loadings_cohort <- Loadings_cohort$X %>%
   rownames_to_column() %>% dplyr::select(rowname, GroupContrib)
 
-perf_plsda_cohort <- perf(PLSDA_cohort, validation = "Mfold", folds = 4, nrepeat = 99, progressBar = TRUE) 
-plot(perf_plsda_cohort, legend = TRUE)
-perf_plsda_cohort$error.rate
+#perf_plsda_cohort <- perf(PLSDA_cohort, validation = "Mfold", folds = 4, nrepeat = 99, progressBar = TRUE) 
+#plot(perf_plsda_cohort, legend = TRUE)
+#perf_plsda_cohort$error.rate
 #ggsave(filename = "VEOIBD_performance_plsda_cohort.svg", plot = perf_plsda_cohort, device = "svg", width = 5, height = 3, dpi = "retina")
 
 #pdf("VEOIBD_PLS_DA_performance.pdf", width = 4.5, height = 3.5)
@@ -483,6 +482,10 @@ plot_ratio <- data_vip %>%
         axis.text = element_text(size = 6))
   
 #ggsave(filename = "ratio_features_PLSDA.svg", plot = plot_ratio, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
+
+# Calculate effect size
+cliff.delta(Ratio ~ Cohort, data = data_vip)
+
 
 ##### N ACYL LIPIDS #####
 nacyl_all <- info_feature_complete %>% 
@@ -642,7 +645,8 @@ plot_ratio_dipeptides <- data_vip_dipeptides %>%
         axis.text = element_text(size = 7))
 #ggsave(filename = "plot_ratio_dipeptides.svg", plot = plot_ratio_dipeptides, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
 
-
+# Calculate effect size
+cliff.delta(log_Relative_abundance ~ Cohort, data = data_vip_dipeptides)
 
 ##### TRIPEPTIDES #####
 tripeptides_interest <- VIPs_cohort_Load %>% 
@@ -676,8 +680,12 @@ plot_ratio_tripeptides <- data_vip_tripeptides %>%
         axis.text = element_text(size = 7))
 #ggsave(filename = "plot_ratio_tripeptides.svg", plot = plot_ratio_tripeptides, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
 
+# Calculate effect size
+cliff.delta(log_Relative_abundance ~ Cohort, data = data_vip_tripeptides)
+
+
 # Include features predicted to be tripeptides by SIRIUS/Canopus
-canopus <- read.delim("metabolomics/SIRIUS/canopus_formula_summary.tsv")
+canopus <- read.delim("canopus_formula_summary.tsv")
 canopus$mappingFeatureId <- as.character(canopus$mappingFeatureId)
 
 class_predictions <- VIPs_cohort_Load %>% left_join(canopus, by = c("ID" = "mappingFeatureId")) %>% 
@@ -720,12 +728,12 @@ plot_ratio_tripeptides_all <- data_vip_tripeptides_all %>%
         axis.text = element_text(size = 7))
 #ggsave(filename = "plot_ratio_tripeptides_all_SIRIUS.svg", plot = plot_ratio_tripeptides_all, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
 
-
+# Calculate effect size
+cliff.delta(log_Relative_abundance ~ Cohort, data = data_vip_tripeptides_all)
 
 ##### BILE ACIDS #####
 
-# Pof molecular networking validation of bile acid candidates
-BA_query <- read.delim("metabolomics/BA_query_library_final.tsv")
+BA_query <- read.delim("BA_query_library_final.tsv")
 names(BA_query)[names(BA_query) == "X.Scan."] <- "ID"
 BA_query_filter <- BA_query %>% 
   dplyr::filter(str_detect(pattern = "Did not pass", query_validation))
@@ -779,6 +787,9 @@ plot_ratio_ba <- data_vip_ba %>%
         axis.text = element_text(size = 7))
 
 #ggsave(filename = "plot_ratio_ba_updated.svg", plot = plot_ratio_ba, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
+
+# Calculate effect size
+cliff.delta(Ratio ~ Cohort, data = data_vip_ba)
 
 plot_cor_ba_age <- data_vip_ba %>%
   ggscatter(x = "Age", y = "Ratio", add = "reg.line", color = "Cohort", legend = "none",
@@ -901,6 +912,18 @@ plot_data_keto_ba <- ggboxplot(data_keto_ba_sum, x = "Feature", y = "rclr_Peak_a
 
 #ggsave(filename = "plot_data_keto_ba1.svg", plot = plot_data_keto_ba, device = "svg", width = 2.8, height = 3.5, dpi = "retina")
 
+keto_21568 <- data_keto_ba_sum %>% 
+  dplyr::filter(Feature == "21568")
+
+# Calculate effect size
+cliff.delta(rclr_Peak_area ~ Cohort, data = keto_21568)
+
+keto_21571 <- data_keto_ba_sum %>% 
+  dplyr::filter(Feature == "21571")
+
+# Calculate effect size
+cliff.delta(rclr_Peak_area ~ Cohort, data = keto_21571)
+
 keto_ba_1 <- ba_all %>% dplyr::filter(Feature == "19831")
 keto_ba_2 <- ba_all %>% dplyr::filter(Feature == "24594")
 keto_ba_3 <- ba_all %>% dplyr::filter(Feature == "32275")
@@ -948,7 +971,6 @@ plot_glu_CA <- glu_CA %>%
         axis.text = element_text(size = 7))
 
 #ggsave(filename = "plot_glu_CA.svg", plot = plot_glu_CA, device = "svg", width = 1.7, height = 3.5, dpi = "retina")
-
 
 
 ##### BAR PLOT - OTHER FEATURES DRIVING SEPARATION #####
@@ -1024,7 +1046,6 @@ VEOIBD_barplot <- ggplot(wilcox_results, aes(x = reorder(Feature, Log2FC), y = L
 
 ##### Boxplot sulfasalazine #####
 
-
 sulfa <- data_sample %>%
   dplyr::select(SampleID, `21282`)
 colnames(sulfa)[2] <- "feat"
@@ -1054,20 +1075,20 @@ plot_sulfa <- sulfa_feat %>%
 
 ##############################################################################################
 # Export mgf for SIRIUS predictions
-vip_200 <- VIPs_cohort_Load %>% head(250)
+#vip_200 <- VIPs_cohort_Load %>% head(250)
 
 # Import full mgf and filter it
 # mgf for microbeMASST 
 # mgf for Sirius
-dda <- Spectra("metabolomics/mzmine/gnps.mgf", source = MsBackendMgf())
-dda_ids <- data.frame(ID = dda@backend@spectraData@listData$FEATURE_ID) %>%
-  dplyr::mutate(Interest = ID %in% vip_200$ID)
-dda_filtered <- dda[dda_ids$Interest]
-export(dda_filtered, MsBackendMgf(), file = "ibd_interest_200.mgf", exportTitle = FALSE)
+#dda <- Spectra("metabolomics/mzmine/gnps.mgf", source = MsBackendMgf())
+#dda_ids <- data.frame(ID = dda@backend@spectraData@listData$FEATURE_ID) %>%
+#  dplyr::mutate(Interest = ID %in% vip_200$ID)
+#dda_filtered <- dda[dda_ids$Interest]
+#export(dda_filtered, MsBackendMgf(), file = "ibd_interest_200.mgf", exportTitle = FALSE)
 ###############################################################################################
 
 ##### SIRIUS PREDICTIONS #####
-canopus <- read.delim("metabolomics/SIRIUS/canopus_formula_summary.tsv")
+canopus <- read.delim("canopus_formula_summary.tsv")
 canopus$mappingFeatureId <- as.character(canopus$mappingFeatureId)
 
 class_predictions <- VIPs_cohort_Load %>% left_join(canopus, by = c("ID" = "mappingFeatureId")) %>% 
@@ -1348,4 +1369,62 @@ plot_9471 <- ggplot(data_long, aes(x = Group, y = Count, fill = Status)) +
     axis.ticks = element_line(color = "black"))
 #ggsave(filename = "Feat_9471_tissuemasst.svg", plot = plot_9471, device = "svg", width = 3, height = 3.5, dpi = "retina")
 
+
+##########################################################################################################################
+### POST HOC ANALYSIS - MEDICATION USE ###
+
+# PERMANOVA
+dist_metabolites <- vegdist(data_final_clr, method = "euclidean")
+disper_donor <- betadisper(dist_metabolites, PCA_whole_scores$Cohort)
+anova(disper_donor)
+permanova <- adonis2(dist_metabolites ~ Cohort + Age + Aminosalicylate + ABX + TNF_alpha_i,
+                     PCA_whole_scores, na.action = na.omit, by = "terms")
+
+
+###################################################################################################
+###################################################################################################
+
+# Filter out features annotated as drugs 
+data_sample_filtered_drugs <- data_sample %>%
+  select(-c(`21282`,
+            `6895`, `6871`, `9857`, `12545`, 
+            `11751`, `7199`, `7129`,
+            `4566`, `7781`)) 
+
+# CLR transformation
+data_final_clr_filtered <- decostand(data_sample_filtered_drugs %>% column_to_rownames("SampleID"), method = "rclr")
+
+# PCA
+PCA_whole_filtered <- mixOmics::pca(data_final_clr_filtered %>% select_at(vars(-one_of(nearZeroVar(., names = TRUE)))),
+                           ncomp = 2, center = TRUE, scale = TRUE)
+PCA_whole_scores_filtered <- data.frame(PCA_whole_filtered$variates$X) %>% 
+  rownames_to_column("sample_ID") %>% left_join(metadata_metabolomics)
+
+i <- "Cohort"
+
+PCA_plot_filtered <- PCA_whole_scores_filtered %>%
+  ggscatter(x = "PC1", y = "PC2", color = i, alpha = 0.6,
+            title = paste("PCA - Fecal Metabolome"),
+            xlab = paste("PC1 (", round(PCA_whole_filtered$prop_expl_var$X[1]*100, digits = 1),"%)", sep = ""), 
+            ylab = paste("PC2 (", round(PCA_whole_filtered$prop_expl_var$X[2]*100, digits = 1),"%)", sep = ""),
+            ggtheme = theme_classic()) +
+  geom_point(data = PCA_whole_scores_filtered %>% group_by((!!sym(i))) %>% 
+               summarise_at(vars(matches("PC")), mean), aes(PC1, PC2, color = (!!sym(i))), size = 4, shape = 8) +
+  scale_color_manual(values = c("VEOIBD" = "#ff7f00", "Healthy" = "#6a3d9a")) + 
+  theme(plot.title = element_text(size = 10), axis.title = element_text(size = 8),
+        axis.text = element_text(size = 6), legend.position = "none") + coord_fixed()
+
+#ggsave(filename = "VEOIBD_PCA_fecal_filtered.svg", plot = PCA_plot_filtered, device = "svg", width = 2, height = 2, dpi = "retina")
+
+
+# PERMANOVA
+dist_metabolites <- vegdist(data_final_clr_filtered, method = "euclidean")
+disper_donor <- betadisper(dist_metabolites, PCA_whole_scores_filtered$Cohort)
+anova(disper_donor)
+permanova <- adonis2(dist_metabolites ~ Cohort + Age, PCA_whole_scores_filtered, na.action = na.omit, by = "terms")
+permanova <- adonis2(dist_metabolites ~ Cohort + Age + Aminosalicylate + ABX + TNF_alpha_i,
+                     PCA_whole_scores_filtered, na.action = na.omit, by = "terms")
+
+model_lm <- lm(Ratio ~ Cohort + Age + Aminosalicylate + ABX + TNF_alpha_i, data = data_vip)
+summary(model_lm)
 
